@@ -15,9 +15,8 @@ const isValidRequestBody = (body) => {
 
 //////////////// -FOR TITLE- ///////////////////////
 const isValidTitle = (title) => {
-    console.log(title)
   let lower = title.toLowerCase();
-  console.log(lower)
+  
   if ((lower === "mr" || lower === "mrs", lower === "miss")) {
     return true;
   }
