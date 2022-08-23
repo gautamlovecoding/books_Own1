@@ -1,14 +1,13 @@
 import bookModel from "../models/bookModel.js";
+import reviewModel from "../models/reviewModel.js"
 import uploadFile from "../awsS3/aws.js";
 import { isValid, isValidRequestBody, isValidBookExcerpt, isValidBookISBN, isValidBookCategory, isValidBookReleasedAt, isValidObejectId } from "../validator/validation.js";
+import userModel from "../models/userModel.js";
 
 const createBooks = async(req, res) => {
     try {
         let data = req.body;
-        console.log(data);
         const { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = data;
-
-        const releasedAt_ValidatorRegEx = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/
 
         if (!isValidRequestBody(data))
             return res
@@ -84,7 +83,7 @@ const createBooks = async(req, res) => {
         if (subcategory) {
             let subcategory1 = subcategory.split(',')
             for (let i = 0; i < subcategory1.length; i++) {
-                result.push(subcategory1[i])
+                result.push(subcategory1[i].trim())
             }
         }
         data.subcategory = result
@@ -108,4 +107,81 @@ const createBooks = async(req, res) => {
     }
 };
 
-export { createBooks };
+const getBooks = async(req, res) => {
+    try {
+        let data = req.query
+        const { userId, category, subcategory } = data
+
+        if (userId) {
+            if (!isValidObejectId(userId)) {
+                return res
+                    .status(400)
+                    .send({ status: false, message: "you must provide a Valid User-ID" });
+            }
+        }
+
+        if (!isValidBookCategory(category))
+            return res
+                .status(400)
+                .send({ status: false, message: "you must provide a Valid Category" });
+
+
+
+
+
+        let filterData = await bookModel.find({ $or: [{ userId: userId }, { category: category }, { subcategory: subcategory }], isDeleted: false }).sort({ title: 1 })
+
+        // for (let i = 0; i < filterData.length; i++) {
+        //     let getSubcategory = filterData[i].subcategory.includes(subcategory)
+        //     if (getSubcategory) {
+        //         filterData = await bookModel.find({ $or: [{ userId: userId }, { category: category }, { subcategory: subcategory }], isDeleted: false }).sort({ title: 1 })
+        //     } else {
+        //         return res
+        //             .status(404)
+        //             .send({ status: false, message: "Data does not exists" });
+        //     }
+        // }
+        // console.log(filterData);
+        if (!filterData.length) {
+            return res
+                .status(404)
+                .send({ status: false, message: "Data does not exists" });
+        }
+
+        return res.status(200).send({ status: true, message: 'Your Data ', data: filterData })
+
+    } catch (error) {
+        res.status(500).send({ status: false, message: error.message });
+    }
+};
+
+const getBooksById = async(req, res) => {
+    try {
+        let data = req.params.bookId
+
+        if (!isValidObejectId(data)) {
+            return res
+                .status(400)
+                .send({ status: false, message: "you must provide a Valid Book-ID" });
+        }
+
+        let checkBookId = await bookModel.findById(data).lean()
+
+        if (!checkBookId) {
+            return res
+                .status(400)
+                .send({ status: false, message: "Book-ID does not exists" });
+        }
+
+        let reviewBookData = await reviewModel.find({ bookId: data, isDeleted: false })
+
+        checkBookId["reviewsData"] = reviewBookData
+
+        return res.status(200).send({ status: true, message: 'Your Data', data: checkBookId })
+
+    } catch (error) {
+        res.status(500).send({ status: false, message: error.message });
+    }
+};
+
+export { createBooks, getBooks, getBooksById };

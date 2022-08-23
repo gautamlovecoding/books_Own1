@@ -168,7 +168,7 @@ const loginUser = async(req, res) => {
                 .status(404)
                 .send({ status: false, message: "Email doesn't exists" });
 
-        console.log(findEmail, ">>>>>>", password);
+
 
         const isMatchPassword = await bcrypt.compare(password, findEmail.password);
 
@@ -177,16 +177,17 @@ const loginUser = async(req, res) => {
                 .status(401)
                 .send({ status: false, message: "Password is invalid" });
 
-        console.log(isMatchPassword);
+
         const token = await signAccessToken(findEmail._id.toString());
 
-        res.header("x-auth-token", token)
+        req.header("x-auth-token", token)
 
         res
             .status(200)
             .send({
                 status: true,
-                message: "You have successfully loggedin..."
+                message: "You have successfully loggedin...",
+                data: token
             });
 
     } catch (error) {
