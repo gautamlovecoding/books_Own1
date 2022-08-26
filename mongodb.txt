@@ -1,0 +1,115 @@
+Ques1.:-Explain the structure of ObjectID in MongoDB?
+Ans:- ObjectIds are small, likely unique, fast to generate, and ordered. ObjectId values consist of 12 bytes(24 charavters), where the first four bytes are a timestamp that reflect the ObjectId’s creation. Specifically:
+a 4-byte value representing the seconds since the Unix epoch,
+a 5-byte random value, and
+a 3-byte counter, starting with a random value. In MongoDB, each document stored in a collection requires a unique _id field that acts as a primary key. If an inserted document omits the _id field, the MongoDB driver automatically generates an ObjectId for the _id field.
+
+Ques2. :-What is sharding in MongoDB?
+Ans:- The procedure of storing data records across multiple machines is referred as Sharding. It is a MongoDB approach to meet the demands of data growth. It is the horizontal partition of data in a database or search engine. Each partition is referred as shard or database shard.
+
+
+Ques:-Explain what are indexes in MongoDB?
+
+Ans:-Indexes are special structures in MongoDB, which stores a small portion of the data set in an easy to traverse form. Ordered by the value of the field specified in the index, the index stores the value of a specific field or set of fields.
+
+Is possible in MongoDB to select collection's documents like in SQL SELECT * FROM collection WHERE _id IN (1,2,3,4)?
+
+-->db.collection.find({ _id: { $in: [1, 2, 3, 4] } });
+
+How to add data in MongoDB?
+-->db.books.insertOne({"title" : "Start With Why"})
+-->db.collection.deleteOne({_id : 3});
+
+
+//Insert a key valye pair in document by help of query
+{
+   "_id" : ObjectId("4b253b067525f35f94b60a31"),
+   "name" : "alice",
+   "age" : 23,
+   "sex" : "female",
+   "location" : "India"
+}
+
+--> db.users.updateOne({"_id" : 
+ObjectId("4b253b067525f35f94b60a31")},{"$set" : {"favoritebook" : "Start with Why"}})
+
+What is the syntax of the skip() method?
+-->db.COLLECTION_NAME.find().limit(NUMBER).skip(NUMBER)
+
+What is the syntax of the limit() and sort() method?
+-->db.COLLECTION_NAME.find().sort({KEY:1})
+
+Which command do we use for dropping a database?
+-->We use the “DB.drop database” command for dropping a database.
+
+How do we use the select * group by MongoDB aggregation?
+For instance, if we have to select all the attributes and groups by name throughout the records. For example:
+
+{Name: George, x: 5, y: 3}
+{Name: George, z: 9}
+{Name: Rob, x: 12, y: 2}
+
+-->db.example.aggregate(
+  {
+    $group:{
+      _id:'$name',
+x: {$addToSet: "$x"    },
+y: {$addToSet: "$y"    },
+z: {$addToSet: "$z"    },
+ }
+}
+)
+
+What are the CRUD operations of MongoDB with example?
+
+-->Create-db.collection.insert();
+
+-->Read-db.collection.find();
+
+-->Update-db.collection.update();
+
+-->Delete-db.collection.remove();
+
+How do we find array elements with multiple criteria?
+For example, if we have the below documents:
+
+{ _id: 1, numbers: [1000, -1000]}
+{ _id: 2, numbers: [500]}
+
+-->db.collection.find({numbers:{$elemMatch: {$gt: -10, $lt: 10}});
+
+
+{
+  "address": {
+     "building": "1007",
+     "coord": [ -73.856077, 40.848447 ],
+     "street": "Morris Park Ave",
+     "zipcode": "10462"
+  },
+  "borough": "Bronx",
+  "cuisine": "Bakery",
+  "grades": [
+     { "date": { "$date": 1393804800000 }, "grade": "A", "score": 2 },
+     { "date": { "$date": 1378857600000 }, "grade": "A", "score": 6 },
+     { "date": { "$date": 1358985600000 }, "grade": "A", "score": 10 },
+     { "date": { "$date": 1322006400000 }, "grade": "A", "score": 9 },
+     { "date": { "$date": 1299715200000 }, "grade": "B", "score": 14 }
+  ],
+  "name": "Morris Park Bake Shop",
+  "restaurant_id": "30075445"
+}
+
+Write a MongoDB query to find the restaurants that do not prepare any cuisine of 'American' and their grade score more than 70 and latitude less than -65.754168.?
+
+
+
+
+
+
+
+
+
+
+
+
+
